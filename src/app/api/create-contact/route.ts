@@ -17,11 +17,14 @@ type ContactPayload = {
 export async function POST(req: NextRequest) {
   try {
     const contentType = req.headers.get("content-type") || "";
-    let body: ContactPayload;
+    const isMultipart = contentType.includes("multipart/form-data");
+    let body: ContactPayload = {};
+    let form: FormData | undefined;
+    let files: File[] = [];
 
-    if (contentType.includes("multipart/form-data")) {
-      const form = await req.formData();
-      const attachments = form.getAll("attachments").filter(Boolean) as File[];
+    if (isMultipart) {
+      form = await req.formData();
+      files = form.getAll("attachments").filter(Boolean) as File[];
       body = {
         firstName: (form.get("firstName") as string) || undefined,
         lastName: (form.get("lastName") as string) || undefined,
@@ -32,7 +35,7 @@ export async function POST(req: NextRequest) {
         leadCategory: (form.get("leadCategory") as string) || undefined,
         icpScore: form.get("icpScore") ? Number(form.get("icpScore")) : undefined,
         selections: parseMaybeJSON(form.get("selections")),
-        attachments: attachments.map((f) => ({ name: f.name, size: f.size, type: f.type })),
+        attachments: files.map((f) => ({ name: f.name, size: f.size, type: f.type })),
       };
     } else {
       body = (await req.json()) as ContactPayload;
@@ -46,35 +49,73 @@ export async function POST(req: NextRequest) {
     let result: { id?: string; url?: string } | undefined;
     let uploadedUrls: string[] | undefined;
 
-    // Optional: upload attachments to Azure if configured
-    const hasAzure = !!process.env.AZURE_BLOB_CONTAINER_SAS_URL;
-    if (hasAzure && (body as any).attachments && Array.isArray((body as any).attachments)) {
-      // When using multipart, we didn't keep the File objects in `body.attachments`.
-      // Re-parse the multipart to extract File objects if needed.
-    }
-    const contentType = req.headers.get("content-type") || "";
-    if (process.env.AZURE_BLOB_CONTAINER_SAS_URL && contentType.includes("multipart/form-data")) {
+    if (process.env.AZURE_BLOB_CONTAINER_SAS_URL && files.length > 0) {
       try {
-        const form = await req.formData();
-        const files = form.getAll("attachments").filter(Boolean) as File[];
-        if (files.length > 0) {
-          const { urls } = await uploadFilesToAzureContainer(files, {
-            prefix: `leads/${new Date().getUTCFullYear()}/${String(new Date().getUTCMonth() + 1).padStart(2, "0")}`,
-          });
-          uploadedUrls = urls;
-        }
+        const { urls } = await uploadFilesToAzureContainer(files, {
+          prefix: `leads/${new Date().getUTCFullYear()}/${String(new Date().getUTCMonth() + 1).padStart(2, "0")}`,
+        });
+        uploadedUrls = urls;
       } catch (e) {
         console.error("Azure upload error", e);
       }
     }
 
-    if ((process.env.HUBSPOT_ACCESS_TOKEN && (!provider || provider === "hubspot"))) {
+    if (process.env.HUBSPOT_ACCESS_TOKEN && (!provider || provider === "hubspot")) {
       result = await createContactHubSpot(body);
-    } else if ((process.env.PIPEDRIVE_API_TOKEN && (!provider || provider === "pipedrive"))) {
+    } else if (process.env.PIPEDRIVE_API_TOKEN && (!provider || provider === "pipedrive")) {
       result = await createContactPipedrive(body);
     } else {
-      // Fallback: accept the lead without external call
       result = { id: `local-${Date.now()}` };
+    }
+
+    // Forward to external webhook with all details
+    const webhookUrl = "https://webhook.latenode.com/41426/dev/a84ac0f8-6356-4aea-a2e1-212ffdf5ab6d";
+    const context = {
+      provider: provider || inferProviderFromEnv(),
+      contactId: result?.id,
+      crmUrl: result?.url,
+      uploadedUrls: uploadedUrls || [],
+      receivedAt: new Date().toISOString(),
+    };
+
+    try {
+      if (isMultipart && form) {
+        const outbound = new FormData();
+        // Pass through known fields
+        const fields = [
+          "firstName",
+          "lastName",
+          "email",
+          "phone",
+          "company",
+          "notes",
+          "leadCategory",
+          "icpScore",
+          "selections",
+        ];
+        for (const key of fields) {
+          const v = form.get(key);
+          if (v !== null && v !== undefined) outbound.append(key, v);
+        }
+        // Attach files
+        files.forEach((file) => outbound.append("attachments", file, file.name));
+        outbound.append("context", JSON.stringify(context));
+        const r = await fetch(webhookUrl, { method: "POST", body: outbound });
+        if (!r.ok) {
+          console.error("Webhook error", r.status, await safeText(r));
+        }
+      } else {
+        const r = await fetch(webhookUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...body, ...context }),
+        });
+        if (!r.ok) {
+          console.error("Webhook error", r.status, await safeText(r));
+        }
+      }
+    } catch (e) {
+      console.error("Webhook forward failed", e);
     }
 
     return Response.json({
@@ -89,6 +130,23 @@ export async function POST(req: NextRequest) {
   } catch (err) {
     console.error("create-contact error", err);
     return Response.json({ error: "Failed to create contact" }, { status: 500 });
+  }
+}
+
+function parseMaybeJSON(value: unknown): unknown {
+  if (typeof value !== "string") return undefined;
+  try {
+    return JSON.parse(value);
+  } catch {
+    return undefined;
+  }
+}
+
+async function safeText(res: Response): Promise<string> {
+  try {
+    return await res.text();
+  } catch {
+    return "";
   }
 }
 

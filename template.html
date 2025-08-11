@@ -755,7 +755,7 @@
             // Show selected files
             attachmentsInput && attachmentsInput.addEventListener('change', () => {
                 if (!attachmentsInput || !fileListEl) return;
-                const files = Array.from((attachmentsInput as HTMLInputElement).files || []);
+                const files = Array.from(attachmentsInput.files || []);
                 fileListEl.innerHTML = files.map(f => `<li>• ${f.name} (${Math.round(f.size/1024)} KB)</li>`).join('');
             });
 
@@ -776,10 +776,10 @@
                 }
 
                 try {
-                    const fd = new FormData(form as HTMLFormElement);
+                    const fd = new FormData(form);
 
                     // Limit files: up to 10, total 25MB
-                    const files = Array.from((attachmentsInput as HTMLInputElement)?.files || []);
+                    const files = Array.from((attachmentsInput && attachmentsInput.files) ? attachmentsInput.files : []);
                     const totalBytes = files.reduce((s, f) => s + f.size, 0);
                     if (files.length > 10 || totalBytes > 25 * 1024 * 1024) {
                         throw new Error('Attachments exceed limits (max 10 files, 25MB total).');
