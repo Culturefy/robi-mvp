@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bennett Thrasher - Tax Preparation Estimate Calculator</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .gradient-bg {
+            background: linear-gradient(to right, #08213E, #133B6C, #08213E);
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <div class="max-w-6xl mx-auto p-6">
+        <!-- Header -->
+        <div class="gradient-bg text-white p-8 mb-6">
+            <div class="flex items-center justify-between mb-6">
+                <div class="flex items-center gap-4">
+                    <!-- Bennett Thrasher Logo -->
+                    <div class="flex items-center gap-4">
+                        <div class="relative flex items-center">
+                            <div class="text-4xl font-bold text-white">BT</div>
+                            <div class="ml-1">
+                                <svg width="20" height="60" viewBox="0 0 20 60" style="color: #E2AD44;">
+                                    <path 
+                                        d="M 2 5 Q 15 30 2 55" 
+                                        stroke="currentColor" 
+                                        stroke-width="4" 
+                                        fill="none" 
+                                        stroke-linecap="round"
+                                    />
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="ml-2">
+                            <div class="text-2xl font-bold tracking-wide">BENNETT</div>
+                            <div class="text-2xl font-bold tracking-wide">THRASHER<span class="text-sm font-normal ml-1">LLP</span></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <div class="text-sm" style="color: #E2AD44;">Get Started Today</div>
+                    <div class="text-white font-semibold text-lg">(770) 396-2200</div>
+                </div>
+            </div>
+            
+            <div class="mb-6">
+                <h1 class="text-4xl font-bold mb-2">Tax Preparation</h1>
+                <h2 class="text-4xl font-bold mb-4">Estimate</h2>
+                <p class="text-lg" style="color: #E2AD44;">45+ years of tax, audit & advisory solutions.</p>
+            </div>
+            
+            <div class="flex items-center gap-8 text-sm">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: #E2AD44;">
+                        <span class="text-white font-semibold text-xs">1</span>
+                    </div>
+                    <span class="font-medium" style="color: #E2AD44;">Get Estimate</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: #133B6C;">
+                        <span class="font-semibold text-xs" style="color: #E2AD44;">2</span>
+                    </div>
+                    <span style="color: #E2AD44;">Submit Details</span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-full flex items-center justify-center" style="background-color: #133B6C;">
+                        <span class="font-semibold text-xs" style="color: #E2AD44;">3</span>
+                    </div>
+                    <span style="color: #E2AD44;">Book Consultation</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Left Panel - Tax Preparation Details -->
+            <div class="lg:col-span-2">
+                <div class="bg-white rounded-lg shadow-sm p-6 mb-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <svg class="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                        </svg>
+                        <h2 class="text-xl font-semibold text-gray-800">Tax Preparation Details</h2>
+                    </div>
+                    <p class="text-gray-600 mb-6">Help us understand your needs to provide the most accurate estimate and ensure we're the right fit for your situation.</p>
+                    
+                    <div class="space-y-6">
+                        <!-- Primary Goals -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                What's your primary goal for tax services?
+                            </label>
+                            <div class="grid grid-cols-2 gap-3">
+                                <button onclick="setPrimaryGoal('compliance')" id="goal-compliance" class="goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200">
+                                    <div class="font-medium text-sm">Basic Compliance</div>
+                                    <div class="text-xs opacity-75">File returns accurately</div>
+                                </button>
+                                <button onclick="setPrimaryGoal('savings')" id="goal-savings" class="goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200">
+                                    <div class="font-medium text-sm">Tax Optimization</div>
+                                    <div class="text-xs opacity-75">Minimize tax liability</div>
+                                </button>
+                                <button onclick="setPrimaryGoal('growth')" id="goal-growth" class="goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200">
+                                    <div class="font-medium text-sm">Business Growth</div>
+                                    <div class="text-xs opacity-75">Strategic tax planning</div>
+                                </button>
+                                <button onclick="setPrimaryGoal('comprehensive')" id="goal-comprehensive" class="goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200">
+                                    <div class="font-medium text-sm">Comprehensive Advisory</div>
+                                    <div class="text-xs opacity-75">Full-service partnership</div>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Budget Range -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                What's your comfortable budget range for tax services?
+                            </label>
+                            <div class="grid grid-cols-5 gap-3">
+                                <button onclick="setBudgetRange('under2k')" id="budget-under2k" class="budget-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Under $2K</button>
+                                <button onclick="setBudgetRange('2k-5k')" id="budget-2k-5k" class="budget-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$2K - $5K</button>
+                                <button onclick="setBudgetRange('5k-10k')" id="budget-5k-10k" class="budget-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$5K - $10K</button>
+                                <button onclick="setBudgetRange('10k-25k')" id="budget-10k-25k" class="budget-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$10K - $25K</button>
+                                <button onclick="setBudgetRange('over25k')" id="budget-over25k" class="budget-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$25K+</button>
+                            </div>
+                        </div>
+
+                        <!-- Timeline -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                When do you need to start?
+                            </label>
+                            <div class="grid grid-cols-4 gap-3">
+                                <button onclick="setTimeline('immediate')" id="timeline-immediate" class="timeline-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Immediately</button>
+                                <button onclick="setTimeline('month')" id="timeline-month" class="timeline-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Within a month</button>
+                                <button onclick="setTimeline('quarter')" id="timeline-quarter" class="timeline-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">This quarter</button>
+                                <button onclick="setTimeline('exploring')" id="timeline-exploring" class="timeline-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Just exploring</button>
+                            </div>
+                        </div>
+
+                        <!-- Prep Type -->
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-3">
+                                What Type of Tax Preparation Are You Looking For?
+                            </label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button onclick="setPrepType('individual')" id="prep-individual" class="prep-type-btn px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-white shadow-md" style="background-color: #08213E;">
+                                    <span class="text-lg">👤</span>
+                                    Individual
+                                </button>
+                                <button onclick="setPrepType('business')" id="prep-business" class="prep-type-btn px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">
+                                    <span class="text-lg">🏢</span>
+                                    Business
+                                </button>
+                                <button onclick="setPrepType('both')" id="prep-both" class="prep-type-btn px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200">
+                                    <span class="text-lg">📊</span>
+                                    Both
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Individual Tax Details -->
+                        <div id="individual-section" class="border-l-4 border-orange-400 pl-6 space-y-6">
+                            <h3 class="text-lg font-semibold text-gray-800">Individual Tax Details</h3>
+                            
+                            <!-- Individual Income -->
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    What's your approximate annual income?
+                                </label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <button onclick="setIndividualIncome('under250k')" id="income-under250k" class="income-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Under $250K</button>
+                                    <button onclick="setIndividualIncome('250k-500k')" id="income-250k-500k" class="income-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$250K - $500K</button>
+                                    <button onclick="setIndividualIncome('500k-1m')" id="income-500k-1m" class="income-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$500K - $1M</button>
+                                    <button onclick="setIndividualIncome('1m-5m')" id="income-1m-5m" class="income-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$1M - $5M</button>
+                                    <button onclick="setIndividualIncome('over5m')" id="income-over5m" class="income-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$5M+</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    What is your filing status?
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="setFilingStatus('single')" id="filing-single" class="filing-status-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left bg-blue-900 text-white">Single</button>
+                                    <button onclick="setFilingStatus('marriedJoint')" id="filing-marriedJoint" class="filing-status-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left bg-gray-100 text-gray-700 hover:bg-gray-200">Married Filing Jointly</button>
+                                    <button onclick="setFilingStatus('marriedSeparate')" id="filing-marriedSeparate" class="filing-status-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left bg-gray-100 text-gray-700 hover:bg-gray-200">Married Filing Separately</button>
+                                    <button onclick="setFilingStatus('headOfHousehold')" id="filing-headOfHousehold" class="filing-status-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors text-left bg-gray-100 text-gray-700 hover:bg-gray-200">Head of Household</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Do you own your home?
+                                </label>
+                                <div class="grid grid-cols-2 gap-3">
+                                    <button onclick="setHomeOwner('yes')" id="home-yes" class="home-owner-btn px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">Yes</button>
+                                    <button onclick="setHomeOwner('no')" id="home-no" class="home-owner-btn px-4 py-2 rounded-lg text-sm font-medium capitalize transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">No</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    How many Forms K-1 do you expect to receive this year?
+                                </label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <button onclick="setK1Forms('0')" id="k1-0" class="k1-forms-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-900 text-white">0</button>
+                                    <button onclick="setK1Forms('1')" id="k1-1" class="k1-forms-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">1</button>
+                                    <button onclick="setK1Forms('2')" id="k1-2" class="k1-forms-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                                    <button onclick="setK1Forms('3')" id="k1-3" class="k1-forms-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+                                    <button onclick="setK1Forms('4+')" id="k1-4+" class="k1-forms-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">4+</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    How many states do you anticipate filing in?
+                                </label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <button onclick="setStates('1')" id="states-1" class="states-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-900 text-white">1</button>
+                                    <button onclick="setStates('2')" id="states-2" class="states-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">2</button>
+                                    <button onclick="setStates('3')" id="states-3" class="states-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">3</button>
+                                    <button onclick="setStates('4')" id="states-4" class="states-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">4</button>
+                                    <button onclick="setStates('5+')" id="states-5+" class="states-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">5+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Business Tax Details -->
+                        <div id="business-section" class="border-l-4 pl-6 space-y-6 hidden" style="border-color: #08213E;">
+                            <h3 class="text-lg font-semibold text-gray-800">Business Tax Details</h3>
+                            
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    What is the tax structure of your entity?
+                                </label>
+                                <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+                                    <button onclick="setBusinessType('scorp')" id="business-scorp" class="business-type-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center bg-gray-100 text-gray-700 hover:bg-gray-200">S Corporation</button>
+                                    <button onclick="setBusinessType('ccorp')" id="business-ccorp" class="business-type-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center bg-gray-100 text-gray-700 hover:bg-gray-200">C Corporation</button>
+                                    <button onclick="setBusinessType('multiMemberLLC')" id="business-multiMemberLLC" class="business-type-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center bg-gray-100 text-gray-700 hover:bg-gray-200">Multi-Member LLC</button>
+                                    <button onclick="setBusinessType('soleProprietor')" id="business-soleProprietor" class="business-type-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center bg-gray-100 text-gray-700 hover:bg-gray-200">SMLLC/Sole Proprietor</button>
+                                    <button onclick="setBusinessType('other')" id="business-other" class="business-type-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors text-center bg-gray-100 text-gray-700 hover:bg-gray-200">Other</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    What was your gross revenue last year?
+                                </label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <button onclick="setRevenue('under1m')" id="revenue-under1m" class="revenue-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">&lt;$1M</button>
+                                    <button onclick="setRevenue('1m-5m')" id="revenue-1m-5m" class="revenue-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$1M - $5M</button>
+                                    <button onclick="setRevenue('5m-15m')" id="revenue-5m-15m" class="revenue-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$5M - $15M</button>
+                                    <button onclick="setRevenue('15m-50m')" id="revenue-15m-50m" class="revenue-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$15M - $50M</button>
+                                    <button onclick="setRevenue('over50m')" id="revenue-over50m" class="revenue-btn px-3 py-2 rounded-lg text-xs font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">$50M+</button>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    How many shareholders/members/partners are there (including you)?
+                                </label>
+                                <div class="grid grid-cols-5 gap-3">
+                                    <button onclick="setShareholders('1')" id="shareholders-1" class="shareholders-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-blue-900 text-white">1</button>
+                                    <button onclick="setShareholders('2-5')" id="shareholders-2-5" class="shareholders-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">2-5</button>
+                                    <button onclick="setShareholders('6-9')" id="shareholders-6-9" class="shareholders-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">6-9</button>
+                                    <button onclick="setShareholders('10-24')" id="shareholders-10-24" class="shareholders-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">10-24</button>
+                                    <button onclick="setShareholders('25+')" id="shareholders-25+" class="shareholders-btn px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200">25+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Panel - Enhanced Estimate with ICP Scoring -->
+            <div class="lg:col-span-1">
+                <div class="bg-white rounded-lg shadow-lg p-6 sticky top-6 border-t-4" style="border-color: #E2AD44;">
+                    <div class="flex items-center gap-2 mb-4">
+                        <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                        </svg>
+                        <h3 class="text-lg font-semibold text-gray-800">Your Estimate</h3>
+                    </div>
+                    
+                    <div class="text-center mb-6">
+                        <div id="price-display" class="text-4xl font-bold mb-2" style="color: #08213E;">$750 - $1,200</div>
+                        <div class="flex items-center justify-center gap-2 mb-2">
+                            <button onclick="setPriceDisplay('year')" id="price-year" class="px-3 py-1 rounded-full text-sm font-medium transition-colors text-white" style="background-color: #08213E;">
+                                per year
+                            </button>
+                            <button onclick="setPriceDisplay('month')" id="price-month" class="px-3 py-1 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-600 hover:bg-gray-300">
+                                per month
+                            </button>
+                        </div>
+                        <p id="price-description" class="text-xs text-gray-500">Annual cost estimate</p>
+                    </div>
+
+                    <!-- ICP Score Display -->
+                    <div id="icp-score-section" class="mb-6 p-4 rounded-lg border-2 hidden" style="background-color: rgba(226, 173, 68, 0.1); border-color: rgba(226, 173, 68, 0.3);">
+                        <div class="flex items-center gap-2 mb-2">
+                            <svg id="category-icon" class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" style="color: #E2AD44;">
+                                <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <h4 id="category-title" class="font-semibold" style="color: #E2AD44;">Standard Inquiry</h4>
+                        </div>
+                        <p id="category-description" class="text-sm text-gray-600 mb-2">We can help with your needs</p>
+                        <div class="flex items-center gap-2">
+                            <div class="flex-1 bg-gray-200 rounded-full h-2">
+                                <div id="score-bar" class="h-2 rounded-full transition-all duration-500" style="width: 0%; background: linear-gradient(to right, #E2AD44, #08213E);"></div>
+                            </div>
+                            <span id="score-text" class="text-sm font-medium text-gray-600">0/100</span>
+                        </div>
+                    </div>
+
+                    <div class="space-y-3 mb-6">
+                        <div class="flex justify-between items-center text-sm">
+                            <span class="text-gray-600">Tax Preparation</span>
+                            <svg class="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                        <div class="bg-gray-50 p-3 rounded-lg">
+                            <div class="text-xs text-gray-500 mb-1">Includes:</div>
+                            <ul class="text-xs text-gray-600 space-y-1">
+                                <li>• Federal & State Returns</li>
+                                <li>• Document Review</li>
+                                <li>• Tax Consultation</li>
+                                <li>• E-filing Services</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Dynamic CTA based on lead category -->
+                    <button id="cta-button" class="w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg" style="background-color: #E2AD44;">
+                        Schedule Consultation
+                    </button>
+
+                    <!-- Category-specific messaging -->
+                    <div class="mt-4 text-center">
+                        <p id="category-message" class="text-xs text-gray-500">
+                            We'll evaluate if our HNW services align with your needs.
+                        </p>
+                    </div>
+
+                    <div class="mt-4 pt-4 border-t border-gray-200 text-center">
+                        <div class="text-xs text-gray-500 mb-2">Contact Bennett Thrasher</div>
+                        <div class="text-sm font-semibold" style="color: #08213E;">(770) 396-2200</div>
+                        <div class="text-xs text-gray-500">Atlanta • Alpharetta • Gainesville</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Consultation Popup Modal -->
+    <div id="consultation-modal" class="fixed inset-0 bg-black/50 hidden items-center justify-center z-50">
+        <div class="bg-white w-full max-w-lg rounded-xl shadow-xl p-6 relative">
+            <button id="close-modal" class="absolute top-3 right-3 text-gray-500 hover:text-gray-700" aria-label="Close">
+                ✕
+            </button>
+            <h3 class="text-xl font-semibold mb-1" style="color:#08213E;">Schedule Consultation</h3>
+            <p class="text-sm text-gray-500 mb-4">Share your details and we’ll follow up shortly.</p>
+
+            <form id="consultation-form" class="space-y-4">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">First Name</label>
+                        <input type="text" id="firstName" name="firstName" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" required />
+                    </div>
+                    <div>
+                        <label class="block text-sm text-gray-700 mb-1">Last Name</label>
+                        <input type="text" id="lastName" name="lastName" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" required />
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1">Email</label>
+                    <input type="email" id="email" name="email" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" required />
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1">Phone</label>
+                    <input type="tel" id="phone" name="phone" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Optional" />
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1">Company</label>
+                    <input type="text" id="company" name="company" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Optional" />
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1">Notes</label>
+                    <textarea id="notes" name="notes" rows="3" class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Anything specific you want us to know"></textarea>
+                </div>
+                <div>
+                    <label class="block text-sm text-gray-700 mb-1">Attachments</label>
+                    <input type="file" id="attachments" name="attachments" multiple class="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt" />
+                    <div id="file-help" class="text-xs text-gray-500 mt-1">Up to 10 files, max 25MB total.</div>
+                    <ul id="file-list" class="mt-2 space-y-1 text-xs text-gray-600"></ul>
+                </div>
+                <div id="form-error" class="hidden text-sm text-red-600"></div>
+                <div id="form-success" class="hidden text-sm text-green-700"></div>
+                <button type="submit" id="submit-consultation" class="w-full text-white font-semibold py-2.5 rounded-lg transition-colors" style="background-color:#08213E;">Submit</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // State management
+        let clientDetails = {
+            prepType: 'individual',
+            filingStatus: 'single',
+            homeOwner: null,
+            k1Forms: '0',
+            states: '1',
+            businessType: '',
+            revenue: '',
+            shareholders: '1',
+            primaryGoal: '',
+            budgetRange: '',
+            timeline: '',
+            individualIncome: ''
+        };
+
+        let priceDisplay = 'year';
+        let icpScore = 0;
+        let leadCategory = 'standard';
+
+        // Base pricing structure - HNW focused
+        const basePricing = {
+            individual: {
+                single: { base: 750, max: 1200 },
+                marriedJoint: { base: 950, max: 1500 },
+                marriedSeparate: { base: 850, max: 1350 },
+                headOfHousehold: { base: 850, max: 1350 }
+            },
+            business: {
+                scorp: { base: 1500, max: 2500 },
+                ccorp: { base: 2000, max: 3500 },
+                multiMemberLLC: { base: 1800, max: 2800 },
+                soleProprietor: { base: 1200, max: 2000 },
+                other: { base: 1400, max: 2200 }
+            }
+        };
+
+        // ICP Scoring Logic - Focused on HNW individuals
+        function calculateIcpScore() {
+            let score = 0;
+
+            // Individual income scoring (50% weight for HNW focus)
+            if (clientDetails.individualIncome) {
+                const incomeScores = {
+                    'under250k': 0,     // Not HNW - immediate disqualifier
+                    '250k-500k': 2,     // Lower HNW threshold
+                    '500k-1m': 5,       // Solid HNW
+                    '1m-5m': 8,         // High HNW
+                    'over5m': 10        // Ultra HNW
+                };
+                score += (incomeScores[clientDetails.individualIncome] || 0) * 5;
+            }
+
+            // Business revenue scoring (30% weight)
+            if (clientDetails.revenue) {
+                const revenueScores = {
+                    'under1m': 1,
+                    '1m-5m': 4,
+                    '5m-15m': 7,
+                    '15m-50m': 9,
+                    'over50m': 10
+                };
+                score += (revenueScores[clientDetails.revenue] || 0) * 3;
+            }
+
+            // Complexity/Sophistication indicators (30% weight)
+            const k1Count = parseInt(clientDetails.k1Forms) || 0;
+            const stateCount = parseInt(clientDetails.states) || 1;
+            
+            score += Math.min(k1Count * 3, 15); // K-1s indicate investment sophistication
+            score += Math.min((stateCount - 1) * 4, 16); // Multi-state = complex situation
+            
+            // Investment sophistication bonus
+            if (k1Count >= 3) score += 5; // Multiple partnerships/investments
+            if (stateCount >= 3) score += 5; // Multi-state complexity
+
+            // Goals and budget alignment (20% weight)
+            if (clientDetails.primaryGoal) {
+                const goalScores = {
+                    'compliance': 1,        // Basic compliance not ideal for HNW
+                    'savings': 4,           // Tax optimization good
+                    'growth': 7,            // Wealth building excellent
+                    'comprehensive': 10     // Full advisory perfect for HNW
+                };
+                score += (goalScores[clientDetails.primaryGoal] || 0) * 2;
+            }
+
+            if (clientDetails.budgetRange) {
+                const budgetScores = {
+                    'under2k': 0,          // Too low for HNW services
+                    '2k-5k': 3,            // Minimum viable
+                    '5k-10k': 6,           // Good fit
+                    '10k-25k': 9,          // Excellent fit
+                    'over25k': 10          // Premium HNW client
+                };
+                score += (budgetScores[clientDetails.budgetRange] || 0) * 2;
+            }
+
+            return Math.min(score, 100); // Cap at 100
+        }
+
+        function determineLeadCategory(score, estimateMax) {
+            // HNW-focused thresholds
+            if (score >= 75 && estimateMax >= 3000) return 'premium';     // Ultra HNW
+            if (score >= 60 && estimateMax >= 2000) return 'qualified';   // High HNW
+            if (score >= 40 && estimateMax >= 1500) return 'standard';    // Entry HNW
+            return 'referral';                                            // Not HNW fit
+        }
+
+        function calculateEstimate() {
+            let baseMin = 0;
+            let baseMax = 0;
+
+            if (clientDetails.prepType === 'individual' || clientDetails.prepType === 'both') {
+                const pricing = basePricing.individual[clientDetails.filingStatus];
+                baseMin += pricing.base;
+                baseMax += pricing.max;
+
+                // Individual income adjustments - HNW focused
+                if (clientDetails.individualIncome) {
+                    const incomeMultipliers = {
+                        'under250k': 0.5,    // Below HNW threshold - discounted
+                        '250k-500k': 1,      // Entry HNW
+                        '500k-1m': 1.5,      // Solid HNW
+                        '1m-5m': 2.2,        // High HNW
+                        'over5m': 3          // Ultra HNW
+                    };
+                    const multiplier = incomeMultipliers[clientDetails.individualIncome] || 1;
+                    baseMin *= multiplier;
+                    baseMax *= multiplier;
+                }
+
+                if (clientDetails.homeOwner === 'yes') {
+                    baseMin += 150;
+                    baseMax += 250;
+                }
+
+                const k1Count = parseInt(clientDetails.k1Forms) || 0;
+                if (k1Count > 0) {
+                    baseMin += k1Count * 200;
+                    baseMax += k1Count * 350;
+                }
+
+                const stateCount = parseInt(clientDetails.states) || 1;
+                if (stateCount > 1) {
+                    baseMin += (stateCount - 1) * 250;
+                    baseMax += (stateCount - 1) * 400;
+                }
+            }
+
+            if ((clientDetails.prepType === 'business' || clientDetails.prepType === 'both') && clientDetails.businessType) {
+                const pricing = basePricing.business[clientDetails.businessType] || basePricing.business.other;
+                baseMin += pricing.base;
+                baseMax += pricing.max;
+
+                if (clientDetails.revenue) {
+                    const revenueMultipliers = {
+                        'under1m': 1,
+                        '1m-5m': 1.3,
+                        '5m-15m': 1.8,
+                        '15m-50m': 2.3,
+                        'over50m': 3
+                    };
+                    const multiplier = revenueMultipliers[clientDetails.revenue] || 1;
+                    baseMin *= multiplier;
+                    baseMax *= multiplier;
+                }
+
+                const shareholderCount = parseInt(clientDetails.shareholders) || 1;
+                if (shareholderCount > 1) {
+                    const complexityMultiplier = 1 + (Math.min(shareholderCount - 1, 10) * 0.1);
+                    baseMin *= complexityMultiplier;
+                    baseMax *= complexityMultiplier;
+                }
+            }
+
+            const finalEstimate = { min: Math.round(baseMin), max: Math.round(baseMax) };
+            
+            // Calculate ICP score and determine category
+            icpScore = calculateIcpScore();
+            leadCategory = determineLeadCategory(icpScore, finalEstimate.max);
+            
+            updatePriceDisplay(finalEstimate);
+            updateICPDisplay();
+            updateCategoryDisplay();
+            attachConsultationHandlers();
+        }
+
+        function updatePriceDisplay(estimate) {
+            const priceDisplayEl = document.getElementById('price-display');
+            const priceDescriptionEl = document.getElementById('price-description');
+            
+            if (estimate.min === 0) {
+                priceDisplayEl.textContent = '$0';
+                priceDescriptionEl.textContent = 'Select options to see estimate';
+            } else if (priceDisplay === 'year') {
+                priceDisplayEl.textContent = `${estimate.min.toLocaleString()} - ${estimate.max.toLocaleString()}`;
+                priceDescriptionEl.textContent = 'Annual cost estimate';
+            } else {
+                const monthlyMin = Math.round(estimate.min / 12);
+                const monthlyMax = Math.round(estimate.max / 12);
+                priceDisplayEl.textContent = `${monthlyMin.toLocaleString()} - ${monthlyMax.toLocaleString()}`;
+                priceDescriptionEl.textContent = 'Monthly estimate (annual cost ÷ 12)';
+            }
+        }
+
+        function updateICPDisplay() {
+            const section = document.getElementById('icp-score-section');
+            const scoreBar = document.getElementById('score-bar');
+            const scoreText = document.getElementById('score-text');
+            
+            if (icpScore > 0) {
+                section.classList.remove('hidden');
+                scoreBar.style.width = `${icpScore}%`;
+                scoreText.textContent = `${icpScore}/100`;
+            } else {
+                section.classList.add('hidden');
+            }
+        }
+
+        function updateCategoryDisplay() {
+            const categoryInfo = getLeadCategoryInfo();
+            
+            // Update ICP section
+            document.getElementById('category-title').textContent = categoryInfo.title;
+            document.getElementById('category-description').textContent = categoryInfo.description;
+            
+            // Handle both class-based and inline-style based colors
+            const icpSection = document.getElementById('icp-score-section');
+            const titleElement = document.getElementById('category-title');
+            const ctaButton = document.getElementById('cta-button');
+            const messageElement = document.getElementById('category-message');
+            
+            icpSection.className = 'mb-6 p-4 rounded-lg border-2';
+            if (categoryInfo.bgColor.includes(':')) {
+                icpSection.style = categoryInfo.bgColor + '; ' + categoryInfo.borderColor;
+            } else {
+                icpSection.classList.add(categoryInfo.bgColor, categoryInfo.borderColor);
+            }
+            
+            titleElement.className = 'font-semibold';
+            if (categoryInfo.color.includes(':')) {
+                titleElement.style = categoryInfo.color;
+            } else {
+                titleElement.classList.add(categoryInfo.color);
+            }
+            
+            // Update CTA button
+            ctaButton.textContent = categoryInfo.ctaText;
+            ctaButton.className = 'w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg';
+            if (categoryInfo.ctaStyle.includes(':')) {
+                ctaButton.style = categoryInfo.ctaStyle;
+            } else {
+                ctaButton.classList.add(categoryInfo.ctaStyle);
+            }
+            
+            // Update message
+            messageElement.textContent = categoryInfo.message;
+            if (categoryInfo.messageColor.includes(':')) {
+                messageElement.className = 'text-xs';
+                messageElement.style = categoryInfo.messageColor;
+            } else {
+                messageElement.className = `text-xs ${categoryInfo.messageColor}`;
+            }
+        }
+
+        function getLeadCategoryInfo() {
+            switch(leadCategory) {
+                case 'premium':
+                    return {
+                        title: 'Ultra High Net Worth Client',
+                        description: 'Perfect fit for our premier wealth management services',
+                        color: 'text-green-600',
+                        bgColor: 'bg-green-50',
+                        borderColor: 'border-green-200',
+                        ctaText: 'Schedule Private Consultation',
+                        ctaStyle: 'bg-green-600 hover:bg-green-700',
+                        message: '🌟 VIP Service - Direct partner access within 4 hours',
+                        messageColor: 'text-green-600 font-medium'
+                    };
+                case 'qualified':
+                    return {
+                        title: 'High Net Worth Prospect',
+                        description: 'Excellent fit for our comprehensive tax services',
+                        color: `color: #133B6C`,
+                        bgColor: `background-color: rgba(19, 59, 108, 0.1)`,
+                        borderColor: `border-color: rgba(19, 59, 108, 0.3)`,
+                        ctaText: 'Schedule Strategy Session',
+                        ctaStyle: `background-color: #08213E`,
+                        message: 'High-value client - Priority scheduling and dedicated team assigned.',
+                        messageColor: `color: #133B6C`
+                    };
+                case 'standard':
+                    return {
+                        title: 'Potential HNW Client',
+                        description: 'May be a fit for select services',
+                        color: `color: #E2AD44`,
+                        bgColor: `background-color: rgba(226, 173, 68, 0.1)`,
+                        borderColor: `border-color: rgba(226, 173, 68, 0.3)`,
+                        ctaText: 'Schedule Consultation',
+                        ctaStyle: `background-color: #E2AD44`,
+                        message: 'We\'ll evaluate if our HNW services align with your needs.',
+                        messageColor: 'text-gray-500'
+                    };
+                default:
+                    return {
+                        title: 'Better Fit Elsewhere',
+                        description: 'We recommend partners who specialize in your needs',
+                        color: 'text-gray-600',
+                        bgColor: 'bg-gray-50',
+                        borderColor: 'border-gray-200',
+                        ctaText: 'View Recommended Partners',
+                        ctaStyle: `background-color: #133B6C`,
+                        message: 'Our partner firms offer excellent service for your income level and may be a better value fit.',
+                        messageColor: 'text-gray-600'
+                    };
+            }
+        }
+
+        // Modal and submission handlers
+        function attachConsultationHandlers() {
+            const modal = document.getElementById('consultation-modal');
+            const openBtn = document.getElementById('cta-button');
+            const closeBtn = document.getElementById('close-modal');
+            const form = document.getElementById('consultation-form');
+            const errorEl = document.getElementById('form-error');
+            const successEl = document.getElementById('form-success');
+            const submitBtn = document.getElementById('submit-consultation');
+
+            if (!openBtn || !modal || !form) return;
+
+            const openModal = () => {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            };
+            const closeModal = () => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            };
+
+            openBtn.addEventListener('click', openModal);
+            closeBtn && closeBtn.addEventListener('click', closeModal);
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal();
+            });
+
+            const attachmentsInput = document.getElementById('attachments');
+            const fileListEl = document.getElementById('file-list');
+
+            // Show selected files
+            attachmentsInput && attachmentsInput.addEventListener('change', () => {
+                if (!attachmentsInput || !fileListEl) return;
+                const files = Array.from((attachmentsInput as HTMLInputElement).files || []);
+                fileListEl.innerHTML = files.map(f => `<li>• ${f.name} (${Math.round(f.size/1024)} KB)</li>`).join('');
+            });
+
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                errorEl.classList.add('hidden');
+                successEl.classList.add('hidden');
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Submitting...';
+
+                const emailVal = (document.getElementById('email') || { value: '' }).value.trim();
+                if (!emailVal) {
+                    errorEl.textContent = 'Please provide a valid email.';
+                    errorEl.classList.remove('hidden');
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                    return;
+                }
+
+                try {
+                    const fd = new FormData(form as HTMLFormElement);
+
+                    // Limit files: up to 10, total 25MB
+                    const files = Array.from((attachmentsInput as HTMLInputElement)?.files || []);
+                    const totalBytes = files.reduce((s, f) => s + f.size, 0);
+                    if (files.length > 10 || totalBytes > 25 * 1024 * 1024) {
+                        throw new Error('Attachments exceed limits (max 10 files, 25MB total).');
+                    }
+
+                    // Attach context
+                    fd.append('leadCategory', String(leadCategory));
+                    fd.append('icpScore', String(icpScore));
+                    fd.append('selections', JSON.stringify(clientDetails));
+
+                    const res = await fetch('/api/create-contact', { method: 'POST', body: fd });
+                    if (!res.ok) {
+                        throw new Error(`Request failed: ${res.status}`);
+                    }
+                    const data = await res.json();
+                    successEl.textContent = data.message || 'Thanks! We\'ll be in touch shortly.';
+                    successEl.classList.remove('hidden');
+                    form.reset();
+                    if (fileListEl) fileListEl.innerHTML = '';
+                    setTimeout(() => closeModal(), 1200);
+                } catch (err) {
+                    errorEl.textContent = err instanceof Error ? err.message : 'Could not submit. Please try again.';
+                    errorEl.classList.remove('hidden');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Submit';
+                }
+            });
+        }
+
+        // Button style functions
+        function updateButtonStyles(buttonGroup, selectedValue, prefix) {
+            document.querySelectorAll(`.${buttonGroup}`).forEach(btn => {
+                btn.className = `${buttonGroup} px-3 py-2 rounded-lg text-sm font-medium transition-colors bg-gray-100 text-gray-700 hover:bg-gray-200`;
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            });
+            const selectedBtn = document.getElementById(`${prefix}-${selectedValue}`);
+            if (selectedBtn) {
+                selectedBtn.className = `${buttonGroup} px-3 py-2 rounded-lg text-sm font-medium transition-colors text-white`;
+                selectedBtn.style.backgroundColor = '#08213E';
+            }
+        }
+
+        function updatePrepTypeStyles(selectedValue) {
+            document.querySelectorAll('.prep-type-btn').forEach(btn => {
+                btn.className = 'prep-type-btn px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-200';
+                btn.style.backgroundColor = '';
+                btn.style.color = '';
+            });
+            const selectedBtn = document.getElementById(`prep-${selectedValue}`);
+            if (selectedBtn) {
+                selectedBtn.className = 'prep-type-btn px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 flex items-center justify-center gap-2 text-white shadow-md';
+                selectedBtn.style.backgroundColor = '#08213E';
+            }
+        }
+
+        function updateGoalStyles(selectedValue) {
+            document.querySelectorAll('.goal-btn').forEach(btn => {
+                btn.className = 'goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200';
+                btn.style.backgroundColor = '';
+                btn.style.borderColor = '';
+                btn.style.color = '';
+            });
+            const selectedBtn = document.getElementById(`goal-${selectedValue}`);
+            if (selectedBtn) {
+                selectedBtn.className = 'goal-btn p-3 rounded-lg text-left transition-all duration-200 border-2 text-white';
+                selectedBtn.style.backgroundColor = '#08213E';
+                selectedBtn.style.borderColor = '#08213E';
+            }
+        }
+
+        // Event handlers
+        function setPrimaryGoal(value) {
+            clientDetails.primaryGoal = value;
+            updateGoalStyles(value);
+            calculateEstimate();
+        }
+
+        function setBudgetRange(value) {
+            clientDetails.budgetRange = value;
+            updateButtonStyles('budget-btn', value, 'budget');
+            calculateEstimate();
+        }
+
+        function setTimeline(value) {
+            clientDetails.timeline = value;
+            updateButtonStyles('timeline-btn', value, 'timeline');
+            calculateEstimate();
+        }
+
+        function setPrepType(value) {
+            clientDetails.prepType = value;
+            updatePrepTypeStyles(value);
+            
+            // Show/hide sections
+            const individualSection = document.getElementById('individual-section');
+            const businessSection = document.getElementById('business-section');
+            
+            if (value === 'individual') {
+                individualSection.classList.remove('hidden');
+                businessSection.classList.add('hidden');
+            } else if (value === 'business') {
+                individualSection.classList.add('hidden');
+                businessSection.classList.remove('hidden');
+            } else { // both
+                individualSection.classList.remove('hidden');
+                businessSection.classList.remove('hidden');
+            }
+            
+            calculateEstimate();
+        }
+
+        function setIndividualIncome(value) {
+            clientDetails.individualIncome = value;
+            updateButtonStyles('income-btn', value, 'income');
+            calculateEstimate();
+        }
+
+        function setFilingStatus(value) {
+            clientDetails.filingStatus = value;
+            updateButtonStyles('filing-status-btn', value, 'filing');
+            calculateEstimate();
+        }
+
+        function setHomeOwner(value) {
+            clientDetails.homeOwner = value;
+            updateButtonStyles('home-owner-btn', value, 'home');
+            calculateEstimate();
+        }
+
+        function setK1Forms(value) {
+            clientDetails.k1Forms = value;
+            updateButtonStyles('k1-forms-btn', value, 'k1');
+            calculateEstimate();
+        }
+
+        function setStates(value) {
+            clientDetails.states = value;
+            updateButtonStyles('states-btn', value, 'states');
+            calculateEstimate();
+        }
+
+        function setBusinessType(value) {
+            clientDetails.businessType = value;
+            updateButtonStyles('business-type-btn', value, 'business');
+            calculateEstimate();
+        }
+
+        function setRevenue(value) {
+            clientDetails.revenue = value;
+            updateButtonStyles('revenue-btn', value, 'revenue');
+            calculateEstimate();
+        }
+
+        function setShareholders(value) {
+            clientDetails.shareholders = value;
+            updateButtonStyles('shareholders-btn', value, 'shareholders');
+            calculateEstimate();
+        }
+
+        function setPriceDisplay(value) {
+            priceDisplay = value;
+            
+            // Update button styles
+            const yearBtn = document.getElementById('price-year');
+            const monthBtn = document.getElementById('price-month');
+            
+            if (value === 'year') {
+                yearBtn.className = 'px-3 py-1 rounded-full text-sm font-medium transition-colors text-white';
+                yearBtn.style.backgroundColor = '#08213E';
+                monthBtn.className = 'px-3 py-1 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-600 hover:bg-gray-300';
+                monthBtn.style.backgroundColor = '';
+            } else {
+                monthBtn.className = 'px-3 py-1 rounded-full text-sm font-medium transition-colors text-white';
+                monthBtn.style.backgroundColor = '#08213E';
+                yearBtn.className = 'px-3 py-1 rounded-full text-sm font-medium transition-colors bg-gray-200 text-gray-600 hover:bg-gray-300';
+                yearBtn.style.backgroundColor = '';
+            }
+            
+            calculateEstimate();
+        }
+
+        // Initialize the calculator
+        window.onload = function() {
+            calculateEstimate();
+        };
+    </script>
+</body>
+</html>
