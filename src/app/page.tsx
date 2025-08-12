@@ -240,6 +240,95 @@ export default function Page() {
     }, 3500);
   }
 
+  // Build selections payload with human-readable labels
+  const selectionsPayload = useMemo(() => {
+    const label = {
+      prepType: {
+        individual: "Individual",
+        business: "Business",
+        both: "Both",
+      },
+      filingStatus: {
+        single: "Single",
+        marriedJoint: "Married - Joint",
+        marriedSeparate: "Married - Separate",
+        headOfHousehold: "Head of Household",
+      },
+      homeOwner: { yes: "Yes", no: "No" },
+      individualIncome: {
+        under250k: "< $250k",
+        "250k-500k": "$250k - $500k",
+        "500k-1m": "$500k - $1m",
+        "1m-5m": "$1m - $5m",
+        over5m: ">$5m+",
+      },
+      k1Forms: { "0": "0", "1": "1", "2": "2", "3": "3", "4+": "4+" },
+      states: { "1": "1", "2": "2", "3": "3", "4": "4", "5+": "5+" },
+      businessType: {
+        scorp: "S Corporation",
+        ccorp: "C Corporation",
+        multiMemberLLC: "Multi-Member LLC",
+        soleProprietor: "SMLLC/Sole Proprietor",
+        other: "Other",
+      },
+      revenue: {
+        under1m: "< $1M",
+        "1m-5m": "$1M - $5M",
+        "5m-15m": "$5M - $15M",
+        "15m-50m": "$15M - $50M",
+        over50m: "$50M+",
+      },
+      shareholders: {
+        "1": "1",
+        "2-5": "2-5",
+        "6-9": "6-9",
+        "10-24": "10-24",
+        "25+": "25+",
+      },
+      primaryGoal: {
+        compliance: "Basic Compliance",
+        savings: "Tax Optimization",
+        growth: "Business Growth",
+        comprehensive: "Comprehensive Advisory",
+      },
+      budgetRange: {
+        under2k: "Under $2K",
+        "2k-5k": "$2K - $5K",
+        "5k-10k": "$5K - $10K",
+        "10k-25k": "$10K - $25K",
+        over25k: "$25K+",
+      },
+      timeline: {
+        immediate: "Immediately",
+        month: "Within a month",
+        quarter: "This quarter",
+        exploring: "Just exploring",
+      },
+    } as const;
+
+    const withLabel = <K extends keyof ClientDetails>(key: K) => {
+      const value = details[key] as any;
+      const map: any = (label as any)[key];
+      const resolved = map && value ? map[value] : value ?? "";
+      return { value, label: resolved };
+    };
+
+    return {
+      prepType: withLabel("prepType"),
+      filingStatus: withLabel("filingStatus"),
+      homeOwner: withLabel("homeOwner"),
+      individualIncome: withLabel("individualIncome"),
+      k1Forms: withLabel("k1Forms"),
+      states: withLabel("states"),
+      businessType: withLabel("businessType"),
+      revenue: withLabel("revenue"),
+      shareholders: withLabel("shareholders"),
+      primaryGoal: withLabel("primaryGoal"),
+      budgetRange: withLabel("budgetRange"),
+      timeline: withLabel("timeline"),
+    };
+  }, [details]);
+
   return (
     <div className="bg-gray-50 min-h-screen">
       <div className="max-w-6xl mx-auto p-6">
@@ -579,6 +668,7 @@ export default function Page() {
         icpScore={icp}
         leadCategory={category}
         clientDetails={details}
+        selectionsPayload={selectionsPayload}
         onNotify={notify}
       />
       <ToastHost toasts={toasts} onDismiss={(id) => setToasts((t) => t.filter((x) => x.id !== id))} />

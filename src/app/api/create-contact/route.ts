@@ -7,10 +7,18 @@ type ContactPayload = {
   email?: string;
   phone?: string;
   company?: string;
+  jobTitle?: string;
+  city?: string;
+  state?: string;
   notes?: string;
   leadCategory?: string;
   icpScore?: number;
   selections?: unknown;
+  preferredMeetingLocal?: string;
+  preferredMeetingStartISO?: string;
+  preferredMeetingEndISO?: string;
+  preferredMeetingDurationMin?: string;
+  preferredMeetingTimezone?: string;
   attachments?: { name: string; size: number; type: string }[];
 };
 
@@ -81,23 +89,11 @@ export async function POST(req: NextRequest) {
     try {
       if (isMultipart && form) {
         const outbound = new FormData();
-        // Pass through known fields
-        const fields = [
-          "firstName",
-          "lastName",
-          "email",
-          "phone",
-          "company",
-          "notes",
-          "leadCategory",
-          "icpScore",
-          "selections",
-        ];
-        for (const key of fields) {
-          const v = form.get(key);
-          if (v !== null && v !== undefined) outbound.append(key, v);
+        // Pass through all fields except attachments (added below)
+        for (const [key, val] of form.entries()) {
+          if (key === "attachments") continue;
+          outbound.append(key, val as any);
         }
-        // Attach files
         files.forEach((file) => outbound.append("attachments", file, file.name));
         outbound.append("context", JSON.stringify(context));
         const r = await fetch(webhookUrl, { method: "POST", body: outbound });

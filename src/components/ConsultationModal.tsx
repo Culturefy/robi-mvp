@@ -8,15 +8,70 @@ type Props = {
   leadCategory: string;
   icpScore: number;
   clientDetails: unknown;
+  selectionsPayload?: unknown;
   onNotify?: (type: "success" | "error" | "info", message: string) => void;
 };
 
-export default function ConsultationModal({ open, onClose, leadCategory, icpScore, clientDetails, onNotify }: Props) {
+export default function ConsultationModal({ open, onClose, leadCategory, icpScore, clientDetails, selectionsPayload, onNotify }: Props) {
+  const US_STATES: { value: string; label: string }[] = [
+    { value: "AL", label: "Alabama" },
+    { value: "AK", label: "Alaska" },
+    { value: "AZ", label: "Arizona" },
+    { value: "AR", label: "Arkansas" },
+    { value: "CA", label: "California" },
+    { value: "CO", label: "Colorado" },
+    { value: "CT", label: "Connecticut" },
+    { value: "DE", label: "Delaware" },
+    { value: "DC", label: "District of Columbia" },
+    { value: "FL", label: "Florida" },
+    { value: "GA", label: "Georgia" },
+    { value: "HI", label: "Hawaii" },
+    { value: "ID", label: "Idaho" },
+    { value: "IL", label: "Illinois" },
+    { value: "IN", label: "Indiana" },
+    { value: "IA", label: "Iowa" },
+    { value: "KS", label: "Kansas" },
+    { value: "KY", label: "Kentucky" },
+    { value: "LA", label: "Louisiana" },
+    { value: "ME", label: "Maine" },
+    { value: "MD", label: "Maryland" },
+    { value: "MA", label: "Massachusetts" },
+    { value: "MI", label: "Michigan" },
+    { value: "MN", label: "Minnesota" },
+    { value: "MS", label: "Mississippi" },
+    { value: "MO", label: "Missouri" },
+    { value: "MT", label: "Montana" },
+    { value: "NE", label: "Nebraska" },
+    { value: "NV", label: "Nevada" },
+    { value: "NH", label: "New Hampshire" },
+    { value: "NJ", label: "New Jersey" },
+    { value: "NM", label: "New Mexico" },
+    { value: "NY", label: "New York" },
+    { value: "NC", label: "North Carolina" },
+    { value: "ND", label: "North Dakota" },
+    { value: "OH", label: "Ohio" },
+    { value: "OK", label: "Oklahoma" },
+    { value: "OR", label: "Oregon" },
+    { value: "PA", label: "Pennsylvania" },
+    { value: "RI", label: "Rhode Island" },
+    { value: "SC", label: "South Carolina" },
+    { value: "SD", label: "South Dakota" },
+    { value: "TN", label: "Tennessee" },
+    { value: "TX", label: "Texas" },
+    { value: "UT", label: "Utah" },
+    { value: "VT", label: "Vermont" },
+    { value: "VA", label: "Virginia" },
+    { value: "WA", label: "Washington" },
+    { value: "WV", label: "West Virginia" },
+    { value: "WI", label: "Wisconsin" },
+    { value: "WY", label: "Wyoming" },
+  ];
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const errorRef = useRef<HTMLDivElement | null>(null);
   const successRef = useRef<HTMLDivElement | null>(null);
   const submitRef = useRef<HTMLButtonElement | null>(null);
   const [phone, setPhone] = useState("");
+  const [meetingLocal, setMeetingLocal] = useState("");
 
   function formatUSPhone(input: string) {
     const digits = (input || "").replace(/\D/g, "");
@@ -42,6 +97,11 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
     return () => document.removeEventListener("keydown", handleEsc);
   }, [open, onClose]);
 
+  function isValidThirtyMinuteSlot(d: Date) {
+    const m = d.getMinutes();
+    return m === 0 || m === 30;
+  }
+
   async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const errorEl = errorRef.current;
@@ -58,10 +118,34 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
       // Normalize phone to digits-only for backend/CRM compatibility
       const phoneVal = (fd.get("phone") || "").toString();
       fd.set("phone", phoneVal.replace(/\D/g, ""));
+
+      // Meeting time normalization and validation
+      const preferred = (fd.get("preferredMeetingLocal") || "").toString();
+      if (preferred) {
+        const localDate = new Date(preferred);
+        if (isNaN(localDate.getTime())) {
+          throw new Error("Please provide a valid preferred meeting time.");
+        }
+        const now = new Date();
+        if (localDate.getTime() <= now.getTime()) {
+          throw new Error("Preferred meeting time must be in the future.");
+        }
+        if (!isValidThirtyMinuteSlot(localDate)) {
+          throw new Error("Please pick a time on the half-hour (e.g., 10:00 or 10:30).");
+        }
+        const end = new Date(localDate.getTime() + 30 * 60 * 1000);
+        fd.append("preferredMeetingStartISO", localDate.toISOString());
+        fd.append("preferredMeetingEndISO", end.toISOString());
+        fd.append("preferredMeetingDurationMin", "30");
+        try {
+          const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+          fd.append("preferredMeetingTimezone", tz);
+        } catch {}
+      }
       // Attach context
       fd.append("leadCategory", String(leadCategory));
       fd.append("icpScore", String(icpScore));
-      fd.append("selections", JSON.stringify(clientDetails));
+      fd.append("selections", JSON.stringify(selectionsPayload ?? clientDetails));
 
       const res = await fetch("/api/create-contact", { method: "POST", body: fd });
       if (!res.ok) throw new Error(`Request failed: ${res.status}`);
@@ -74,6 +158,7 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
       onNotify?.("success", msg);
       form.reset();
       setPhone("");
+      setMeetingLocal("");
       setTimeout(() => onClose(), 1000);
     } catch (err: any) {
       const em = err?.message || "Could not submit. Please try again.";
@@ -127,19 +212,50 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
               className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]"
             />
           </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Company</label>
+          <input type="text" name="company" className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Optional" />
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Job Title</label>
+          <input type="text" name="jobTitle" className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="e.g., CFO" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
-            <label className="block text-sm text-gray-700 mb-1">Company</label>
-            <input type="text" name="company" className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Optional" />
+            <label className="block text-sm text-gray-700 mb-1">City</label>
+            <input type="text" name="city" required className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="City" />
           </div>
+          <div>
+            <label className="block text-sm text-gray-700 mb-1">State</label>
+            <select name="state" required className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]">
+              <option value="">Select state</option>
+              {US_STATES.map((s) => (
+                <option key={s.value} value={s.value}>{s.label}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">Preferred meeting time (30 mins)</label>
+          <input
+            type="datetime-local"
+            name="preferredMeetingLocal"
+            value={meetingLocal}
+            onChange={(e) => setMeetingLocal(e.target.value)}
+            step={1800}
+            className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]"
+          />
+          <div className="text-xs text-gray-500 mt-1">We’ll try to book your preferred 30-minute slot.</div>
+        </div>
           <div>
             <label className="block text-sm text-gray-700 mb-1">Notes</label>
             <textarea name="notes" rows={3} className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Anything specific you want us to know" />
           </div>
-          <div>
-            <label className="block text-sm text-gray-700 mb-1">Attachments</label>
-            <input name="attachments" type="file" multiple className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt" />
-            <div className="text-xs text-gray-500 mt-1">Up to 10 files, max 25MB total.</div>
-          </div>
+        <div>
+          <label className="block text-sm text-gray-700 mb-1">We will be needing your tax documents</label>
+          <input name="attachments" type="file" multiple className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" accept=".pdf,.doc,.docx,.xls,.xlsx,.png,.jpg,.jpeg,.gif,.txt" />
+          <div className="text-xs text-gray-500 mt-1">Up to 10 files, max 25MB total.</div>
+        </div>
           <div ref={errorRef} className="hidden text-sm text-red-600" />
           <div ref={successRef} className="hidden text-sm text-green-700" />
           <button ref={submitRef} type="submit" className="w-full text-white font-semibold py-2.5 rounded-lg transition-colors" style={{ backgroundColor: "#08213E" }}>
