@@ -20,9 +20,21 @@ export async function uploadFilesToAzureContainer(
 ): Promise<{ urls: string[]; names: string[] }> {
   if (!files || files.length === 0) return { urls: [], names: [] };
 
-  const containerSasUrl = options.containerSasUrl || process.env.AZURE_BLOB_CONTAINER_SAS_URL;
+  // Resolve container SAS URL from option, env, or assembled pieces
+  let containerSasUrl = options.containerSasUrl || process.env.AZURE_BLOB_CONTAINER_SAS_URL;
   if (!containerSasUrl) {
-    throw new Error("Missing container SAS URL. Set AZURE_BLOB_CONTAINER_SAS_URL or pass options.containerSasUrl.");
+    const account = process.env.AZURE_STORAGE_ACCOUNT;
+    const container = process.env.AZURE_STORAGE_CONTAINER;
+    let token = process.env.AZURE_CONTAINER_SAS_TOKEN;
+    if (account && container && token) {
+      token = token.replace(/^\?+/, "");
+      containerSasUrl = `https://${account}.blob.core.windows.net/${container}?${token}`;
+    }
+  }
+  if (!containerSasUrl) {
+    throw new Error(
+      "Missing container SAS URL. Set AZURE_BLOB_CONTAINER_SAS_URL or provide AZURE_STORAGE_ACCOUNT, AZURE_STORAGE_CONTAINER, and AZURE_CONTAINER_SAS_TOKEN."
+    );
   }
 
   const { baseUrl, sas } = splitSasUrl(containerSasUrl);
@@ -72,4 +84,3 @@ function makeSafeBlobName(name: string): string {
     .replace(/[^a-zA-Z0-9._\-]/g, "-");
   return cleaned || "file";
 }
-

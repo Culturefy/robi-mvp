@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import { uploadFilesToAzureContainer } from "@/lib/azureUpload";
+import { safePathSegment } from "@/lib/sanitize";
 
 type ContactPayload = {
   firstName?: string;
@@ -56,15 +57,21 @@ export async function POST(req: NextRequest) {
     const provider = process.env.CRM_PROVIDER?.toLowerCase();
     let result: { id?: string; url?: string } | undefined;
     let uploadedUrls: string[] | undefined;
+    let uploadError: string | undefined;
+
+    //           prefix: `leads/${new Date().getUTCFullYear()}/${String(new Date().getUTCMonth() + 1).padStart(2, "0")}`,
 
     if (process.env.AZURE_BLOB_CONTAINER_SAS_URL && files.length > 0) {
       try {
+        const year = new Date().getUTCFullYear();
+        const emailSafe = safePathSegment(body.email || "unknown");
         const { urls } = await uploadFilesToAzureContainer(files, {
-          prefix: `leads/${new Date().getUTCFullYear()}/${String(new Date().getUTCMonth() + 1).padStart(2, "0")}`,
+          prefix: `leads/${year}/${emailSafe}`,
         });
         uploadedUrls = urls;
-      } catch (e) {
+      } catch (e: any) {
         console.error("Azure upload error", e);
+        uploadError = e?.message || "Azure upload failed";
       }
     }
 
@@ -122,6 +129,7 @@ export async function POST(req: NextRequest) {
       url: result?.url,
       attachments: body.attachments?.map((a) => ({ name: a.name, size: a.size })) || [],
       uploadedUrls: uploadedUrls || [],
+      uploadError,
     });
   } catch (err) {
     console.error("create-contact error", err);
