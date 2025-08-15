@@ -37,6 +37,9 @@ export default function DocumentsPortalPage() {
           )}
           {pending ? "Searching..." : "View Documents"}
         </button>
+        <a href="/documents/all" className="h-10 px-4 rounded-lg border text-sm flex items-center hover:bg-gray-50" style={{ color: "#08213E", borderColor: "#08213E" }}>
+          Browse All by Email
+        </a>
       </form>
       <div className="mt-6 text-xs text-gray-500">
         Tip: use the same email that was used to upload documents.
