@@ -1,7 +1,11 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import ConsultationModal from "@/components/ConsultationModal";
+import React, { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
+// Modal kept for future use if needed, but form is inline now
+// import ConsultationModal from "@/components/ConsultationModal";
+import ConsultationInlineForm from "@/components/ConsultationInlineForm";
+import HubspotMeetingEmbed from "@/components/HubspotMeetingEmbed";
 import OptionButtonGroup from "@/components/OptionButtonGroup";
 import ToastHost, { type ToastItem } from "@/components/Toast";
 
@@ -225,11 +229,83 @@ function leadCategoryInfo(category: string) {
   }
 }
 
+function ctaText(category: string) {
+  switch (category) {
+    case "premium":
+      return "Schedule Private Consultation";
+    case "qualified":
+      return "Schedule Strategy Session";
+    case "standard":
+      return "Schedule Consultation";
+    default:
+      return "View Recommended Partners";
+  }
+}
+
+function categoryMessage(category: string) {
+  switch (category) {
+    case "premium":
+      return "VIP Service — Direct partner access within 4 hours.";
+    case "qualified":
+      return "High-value client — Priority scheduling and dedicated team assigned.";
+    case "standard":
+      return "We'll evaluate if our HNW services align with your needs.";
+    default:
+      return "Our partner firms may be a better value fit.";
+  }
+}
+
+function categoryVisual(category: string) {
+  switch (category) {
+    case "premium":
+      return {
+        color: "text-green-600",
+        bgColor: "bg-green-50",
+        borderColor: "border-green-200",
+        ctaClass: "bg-green-600 hover:bg-green-700",
+        message: "🌟 VIP Service - Direct partner access within 4 hours",
+        messageColor: "text-green-600 font-medium",
+      } as const;
+    case "qualified":
+      return {
+        color: "text-blue-600",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
+        ctaClass: "bg-blue-900 hover:bg-blue-800",
+        message: "High-value client - Priority scheduling and dedicated team assigned.",
+        messageColor: "text-blue-600",
+      } as const;
+    case "standard":
+      return {
+        color: "text-orange-600",
+        bgColor: "bg-orange-50",
+        borderColor: "border-orange-200",
+        ctaClass: "bg-orange-500 hover:bg-orange-600",
+        message: "We'll evaluate if our HNW services align with your needs.",
+        messageColor: "text-gray-500",
+      } as const;
+    default:
+      return {
+        color: "text-gray-600",
+        bgColor: "bg-gray-50",
+        borderColor: "border-gray-200",
+        ctaClass: "bg-gray-600 hover:bg-gray-700",
+        message:
+          "Our partner firms offer excellent service for your income level and may be a better value fit.",
+        messageColor: "text-gray-600",
+      } as const;
+  }
+}
+
 export default function Page() {
   const [details, setDetails] = useState<ClientDetails>(initialDetails);
   const [priceDisplay, setPriceDisplay] = useState<"year" | "month">("year");
-  const [modalOpen, setModalOpen] = useState(false);
-  const { est, icp, category, display } = useEstimate(details, priceDisplay);
+  // Step state for horizontal transition between Step 1 and Step 2
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const stepContainerRef = useRef<HTMLDivElement | null>(null);
+  const step2FocusRef = useRef<HTMLDivElement | null>(null);
+  const step3FocusRef = useRef<HTMLDivElement | null>(null);
+  const { icp, category, display } = useEstimate(details, priceDisplay);
   const [toasts, setToasts] = useState<ToastItem[]>([]);
 
   function notify(type: "success" | "error" | "info", message: string) {
@@ -329,69 +405,184 @@ export default function Page() {
     };
   }, [details]);
 
+  const btnLabel = ctaText(category);
+  function handlePrimaryCta() {
+    if (category === "referral") {
+      window.open("https://www.btcpa.net/resources", "_blank");
+      return;
+    }
+    // Move to Step 2 with a horizontal transition and scroll top of section into view
+    setStep(2);
+    if (stepContainerRef.current) stepContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  function backToStep1() {
+    setStep(1);
+    if (stepContainerRef.current) stepContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  // When Step 2 is active, move focus to the form container for accessibility
+  useEffect(() => {
+    if (step === 2 && step2FocusRef.current) step2FocusRef.current.focus();
+    if (step === 3 && step3FocusRef.current) step3FocusRef.current.focus();
+  }, [step]);
+
+  const catVis = categoryVisual(category);
+
   return (
-    <div className="bg-gray-50 min-h-screen">
-      <div className="max-w-6xl mx-auto p-6">
-        <div className="gradient-bg text-white p-8 mb-6" style={{ background: "linear-gradient(to right, #08213E, #133B6C, #08213E)" }}>
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center gap-4">
-              <div className="flex items-center gap-4">
-                <div className="relative flex items-center">
-                  <div className="text-4xl font-bold text-white">BT</div>
-                  <div className="ml-1">
-                    <svg width="20" height="60" viewBox="0 0 20 60" style={{ color: "#E2AD44" }}>
-                      <path d="M 2 5 Q 15 30 2 55" stroke="currentColor" strokeWidth="4" fill="none" strokeLinecap="round"></path>
-                    </svg>
-                  </div>
-                </div>
-                <div className="ml-2">
-                  <div className="text-2xl font-bold tracking-wide">BENNETT</div>
-                  <div className="text-2xl font-bold tracking-wide">THRASHER<span className="text-sm font-normal ml-1">LLP</span></div>
-                </div>
-              </div>
-            </div>
-            <div className="text-right">
-              <div className="text-sm" style={{ color: "#E2AD44" }}>Get Started Today</div>
-              <div className="text-white font-semibold text-lg">(770) 396-2200</div>
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-blue-900 text-white">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex justify-end py-2 text-sm border-b border-blue-800">
+            <div className="flex gap-6">
+              <a href="#" className="text-blue-200 hover:text-white">Online Payments & Client Resources</a>
+              <a href="#" className="text-blue-200 hover:text-white">Careers</a>
             </div>
           </div>
-          <div className="mb-6">
-            <h1 className="text-4xl font-bold mb-2">Tax Preparation</h1>
-            <h2 className="text-4xl font-bold mb-4">Estimate</h2>
-            <p className="text-lg" style={{ color: "#E2AD44" }}>45+ years of tax, audit & advisory solutions.</p>
+          <div className="flex items-center justify-between py-4">
+            <div className="flex items-center gap-2 md:gap-3">
+              <Image
+                src="/BThrasher_logo.svg"
+                alt="Bennett Thrasher"
+                width={220}
+                height={48}
+                
+               
+              />
+            </div>
+            <nav className="flex items-center gap-8">
+              <a href="#" className="text-white hover:text-orange-400 font-medium">Services</a>
+              <a href="#" className="text-white hover:text-orange-400 font-medium">Industries</a>
+              <a href="#" className="text-white hover:text-orange-400 font-medium">People</a>
+              <a href="#" className="text-white hover:text-orange-400 font-medium">Resources</a>
+              <button className="border border-white rounded-full px-4 py-2 text-white hover:bg-white hover:text-blue-900 transition-colors">
+                770.396.2200
+              </button>
+              <div className="w-10 h-10 bg-orange-400 rounded-full flex items-center justify-center">
+                <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                </svg>
+              </div>
+            </nav>
           </div>
-          <div className="flex items-center gap-8 text-sm">
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#E2AD44" }}>
-                <span className="text-white font-semibold text-xs">1</span>
-              </div>
-              <span className="font-medium" style={{ color: "#E2AD44" }}>Get Estimate</span>
+        </div>
+      </header>
+
+      <div className="max-w-7xl mx-auto px-4 py-12">
+        <div className="mb-8">
+          <h1 className="text-4xl font-bold text-gray-900 mb-2">Tax Preparation Estimate</h1>
+          <p className="text-gray-600 text-lg mb-6">45+ years of tax, audit & advisory solutions.</p>
+          <div className="flex items-center gap-6">
+            <div className="flex cursor-pointer items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step === 1 ? "bg-orange-400 text-white" : "bg-gray-300 text-gray-600"}`}>1</div>
+              <span className={`${step === 1 ? "font-semibold text-orange-500" : "text-gray-500"}`}>Get Estimate</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#133B6C" }}>
-                <span className="font-semibold text-xs" style={{ color: "#E2AD44" }}>2</span>
-              </div>
-              <span style={{ color: "#E2AD44" }}>Submit Details</span>
+            <div className="flex cursor-pointer items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step === 2 ? "bg-orange-400 text-white" : "bg-gray-300 text-gray-600"}`}>2</div>
+              <span className={`${step === 2 ? "font-semibold text-orange-500" : "text-gray-500"}`}>Submit Details</span>
             </div>
-            <div className="flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full flex items-center justify-center" style={{ backgroundColor: "#133B6C" }}>
-                <span className="font-semibold text-xs" style={{ color: "#E2AD44" }}>3</span>
-              </div>
-              <span style={{ color: "#E2AD44" }}>Book Consultation</span>
+            <div className="flex cursor-pointer items-center gap-2">
+              <div className={`w-8 h-8 rounded-full flex items-center justify-center font-semibold text-sm ${step === 3 ? "bg-orange-400 text-white" : "bg-gray-300 text-gray-600"}`}>3</div>
+              <span className={`${step === 3 ? "font-semibold text-orange-500" : "text-gray-500"}`}>Book Consultation</span>
             </div>
           </div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2">
-            <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
-              <div className="flex items-center gap-3 mb-4">
-                <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
-                </svg>
-                <h2 className="text-xl font-semibold text-gray-800">Tax Preparation Details</h2>
-              </div>
-              <p className="text-gray-600 mb-6">Help us understand your needs to provide the most accurate estimate and ensure we're the right fit for your situation.</p>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <div className="lg:col-span-2" ref={stepContainerRef}>
+            {/* Horizontal step slider */}
+            <div className="relative overflow-hidden">
+              <div
+                className="flex transform-gpu"
+                style={{
+                  width: "300%",
+                  transform:
+                    step === 1
+                      ? "translateX(-66.6667%)"
+                      : step === 2
+                      ? "translateX(-33.3333%)"
+                      : "translateX(0%)",
+                  transition: "transform 500ms ease-in-out",
+                }}
+              >
+                {/* Step 3 panel (placed first for rightward progression) */}
+                <section
+                  id="book-consultation"
+                  aria-hidden={step !== 3}
+                  className={`pl-2 ${step === 3 ? "pointer-events-auto" : "pointer-events-none"}`}
+                  style={{ width: "33.3333%" }}
+                  ref={step3FocusRef as any}
+                  tabIndex={-1}
+                >
+                  <div className="bg-white rounded-lg shadow-sm p-8">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                        </svg>
+                        <h2 className="text-xl font-semibold text-gray-900">Book Consultation</h2>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => setStep(2)}
+                        className="text-sm font-medium text-blue-900 hover:text-blue-700"
+                      >
+                        Back to Step 2
+                      </button>
+                    </div>
+                    <p className="text-gray-600 mb-6">Pick a time that works best for you.</p>
+                    <HubspotMeetingEmbed />
+                  </div>
+                </section>
+
+                {/* Step 2 panel (middle) */}
+                <section
+                  id="submit-details"
+                  aria-hidden={step !== 2}
+                  className={`px-2 ${step === 2 ? "pointer-events-auto" : "pointer-events-none"}`}
+                  style={{ width: "33.3333%" }}
+                  ref={step2FocusRef as any}
+                  tabIndex={-1}
+                >
+                  <div className="mb-4">
+                    <button
+                      type="button"
+                      onClick={backToStep1}
+                      className="inline-flex items-center gap-2 text-sm font-medium text-blue-900 hover:text-blue-700"
+                    >
+                      <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+                        <path fillRule="evenodd" d="M12.707 15.707a1 1 0 01-1.414 0l-5-5a1 1 0 010-1.414l5-5a1 1 0 111.414 1.414L8.414 10l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                      </svg>
+                      Back to Step 1
+                    </button>
+                  </div>
+                  <ConsultationInlineForm
+                    leadCategory={category}
+                    icpScore={icp}
+                    clientDetails={details}
+                    selectionsPayload={selectionsPayload}
+                    onNotify={notify}
+                    onSuccess={() => {
+                      setStep(3);
+                      if (stepContainerRef.current) stepContainerRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+                    }}
+                  />
+                </section>
+                {/* Step 1 panel (rightmost, initially visible) */}
+                <section
+                  id="step1-panel"
+                  aria-hidden={step !== 1}
+                  className={`pr-2 ${step === 1 ? "pointer-events-auto" : "pointer-events-none"}`}
+                  style={{ width: "33.3333%" }}
+                >
+                  <div id="step1-card" className="bg-white rounded-lg shadow-sm p-8">
+                    <div className="flex items-center gap-3 mb-4">
+                      <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                      </svg>
+                      <h2 className="text-xl font-semibold text-gray-800">Tax Preparation Details</h2>
+                    </div>
+                    <p className="text-gray-600 mb-6">Help us understand your needs to provide the most accurate estimate and ensure we're the right fit for your situation.</p>
 
               <div className="space-y-6">
                 <div>
@@ -572,105 +763,171 @@ export default function Page() {
                   </div>
                 )}
               </div>
+                  {/* end of step1-card */}
+                </div>
+                {/* end of step1-panel */}
+                </section>
+              </div>
             </div>
           </div>
 
           <div className="lg:col-span-1">
-            <div className="bg-white rounded-lg shadow-lg p-6 sticky top-6 border-t-4" style={{ borderColor: "#E2AD44" }}>
-              <div className="flex items-center gap-2 mb-4">
-                <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
-                </svg>
-                <h3 className="text-lg font-semibold text-gray-800">Your Estimate</h3>
-              </div>
-              <div className="text-center mb-6">
-                <div className="text-4xl font-bold mb-2" style={{ color: "#08213E" }}>
-                  {display.text || "$0"}
+            {step !== 3 ? (
+              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6 border-t-4 border-orange-400">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                  </svg>
+                  <h3 className="text-lg font-semibold text-gray-800">Your Estimate</h3>
                 </div>
-                <div className="flex items-center justify-center gap-2 mb-2">
-                  <button
-                    onClick={() => setPriceDisplay("year")}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      priceDisplay === "year" ? "text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                    }`}
-                    style={priceDisplay === "year" ? { backgroundColor: "#08213E" } : undefined}
-                  >
-                    per year
-                  </button>
-                  <button
-                    onClick={() => setPriceDisplay("month")}
-                    className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
-                      priceDisplay === "month" ? "text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
-                    }`}
-                    style={priceDisplay === "month" ? { backgroundColor: "#08213E" } : undefined}
-                  >
-                    per month
-                  </button>
+                <div className="text-center mb-6">
+                  <div className="text-4xl font-bold mb-2" style={{ color: "#08213E" }}>
+                    {display.text || "$0"}
+                  </div>
+                  <div className="flex items-center justify-center gap-2 mb-2">
+                    <button
+                      onClick={() => setPriceDisplay("year")}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        priceDisplay === "year" ? "text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      }`}
+                      style={priceDisplay === "year" ? { backgroundColor: "#08213E" } : undefined}
+                    >
+                      per year
+                    </button>
+                    <button
+                      onClick={() => setPriceDisplay("month")}
+                      className={`px-3 py-1 rounded-full text-sm font-medium transition-colors ${
+                        priceDisplay === "month" ? "text-white" : "bg-gray-200 text-gray-600 hover:bg-gray-300"
+                      }`}
+                      style={priceDisplay === "month" ? { backgroundColor: "#08213E" } : undefined}
+                    >
+                      per month
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500">{display.desc}</p>
                 </div>
-                <p className="text-xs text-gray-500">{display.desc}</p>
-              </div>
 
-              {/* ICP Score Display (restored original styling) */}
-              {icp > 0 && (() => {
-                const info = leadCategoryInfo(category);
-                return (
-                  <div className="mb-6 p-4 rounded-lg border-2" style={info.containerStyle as any}>
+                {icp > 0 && (
+                  <div className={`mb-6 p-4 rounded-lg border-2 ${catVis.bgColor} ${catVis.borderColor}`}>
                     <div className="flex items-center gap-2 mb-2">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20" style={info.titleStyle as any}>
-                        <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                      <svg className={`w-5 h-5 ${catVis.color}`} fill="currentColor" viewBox="0 0 20 20">
+                        <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
                       </svg>
-                      <h4 className="font-semibold" style={info.titleStyle as any}>{info.title}</h4>
+                      <h4 className={`font-semibold ${catVis.color}`}>
+                        {category === "premium" && "Ultra High Net Worth Client"}
+                        {category === "qualified" && "High Net Worth Prospect"}
+                        {category === "standard" && "Potential HNW Client"}
+                        {category === "referral" && "Better Fit Elsewhere"}
+                      </h4>
                     </div>
-                    <p className="text-sm text-gray-600 mb-2">{info.description}</p>
+                    <p className="text-sm text-gray-600 mb-2">
+                      {category === "premium" && "Perfect fit for our premier wealth management services"}
+                      {category === "qualified" && "Excellent fit for our comprehensive tax services"}
+                      {category === "standard" && "May be a fit for select services"}
+                      {category === "referral" && "We recommend partners who specialize in your needs"}
+                    </p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 bg-gray-200 rounded-full h-2">
-                        <div
-                          className="h-2 rounded-full transition-all duration-500"
-                          style={{ width: `${icp}%`, background: "linear-gradient(to right, #E2AD44, #08213E)" }}
-                        />
+                        <div className="h-2 rounded-full bg-gradient-to-r from-orange-400 to-blue-900 transition-all duration-500" style={{ width: `${icp}%` }}></div>
                       </div>
                       <span className="text-sm font-medium text-gray-600">{icp}/100</span>
                     </div>
                   </div>
-                );
-              })()}
+                )}
 
-              {/* Category messaging */}
-              <button
-                onClick={() => setModalOpen(true)}
-                className="w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg"
-                style={{ backgroundColor: "#E2AD44" }}
-              >
-                Schedule Consultation
-              </button>
-              <div className="mt-4 text-center">
-                <p className="text-xs text-gray-500">
-                  {category === "premium" && "Ideal HNW fit. Priority engagement recommended."}
-                  {category === "qualified" && "Strong HNW fit. Great candidate for advisory."}
-                  {category === "standard" && "We'll evaluate if our HNW services align with your needs."}
-                  {category === "referral" && "We can connect you with a better-fit partner."}
-                </p>
-              </div>
+                <div className="space-y-3 mb-6">
+                  <div className="flex justify-between items-center text-sm">
+                    <span className="text-gray-600">Tax Preparation</span>
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                    </svg>
+                  </div>
+                  <div className="bg-gray-50 p-3 rounded-lg">
+                    <div className="text-xs text-gray-500 mb-1">Includes:</div>
+                    <ul className="text-xs text-gray-600 space-y-1">
+                      <li>• Federal & State Returns</li>
+                      <li>• Document Review</li>
+                      <li>• Tax Consultation</li>
+                      <li>• E-filing Services</li>
+                    </ul>
+                  </div>
+                </div>
 
-              <div className="mt-4 pt-4 border-t border-gray-200 text-center">
-                <div className="text-xs text-gray-500 mb-2">Contact Bennett Thrasher</div>
-                <div className="text-sm font-semibold" style={{ color: "#08213E" }}>(770) 396-2200</div>
-                <div className="text-xs text-gray-500">Atlanta • Alpharetta • Gainesville</div>
+                <button
+                  onClick={handlePrimaryCta}
+                  className={`w-full text-white font-semibold py-3 px-6 rounded-lg transition-all duration-200 shadow-md hover:shadow-lg ${catVis.ctaClass}`}
+                >
+                  {btnLabel}
+                </button>
+                <div className="mt-4 text-center">
+                  <p className={`text-xs ${catVis.messageColor}`}>{catVis.message}</p>
+                </div>
+
+                <div className="mt-4 pt-4 border-t border-gray-200 text-center">
+                  <div className="text-xs text-gray-500 mb-2">Contact Bennett Thrasher</div>
+                  <div className="text-sm font-semibold" style={{ color: "#08213E" }}>(770) 396-2200</div>
+                  <div className="text-xs text-gray-500">Atlanta • Alpharetta • Gainesville</div>
+                </div>
               </div>
-            </div>
+            ) : (
+              <div className="bg-white rounded-lg shadow-sm p-6 sticky top-6 border-t-4 border-orange-400">
+                <div className="flex items-center gap-2 mb-4">
+                  <svg className="w-6 h-6 text-blue-900" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                  </svg>
+                  <h3 className="text-lg font-semibold text-gray-800">Consultation Details</h3>
+                </div>
+                <div className="bg-gray-50 p-4 rounded-lg mb-4">
+                  <div className="text-xs text-gray-500 mb-2">Summary</div>
+                  <ul className="text-sm text-gray-700 space-y-1">
+                    {Object.entries(selectionsPayload)
+                      .filter(([_, v]: any) => v && (v as any).label)
+                      .slice(0, 8)
+                      .map(([k, v]: any) => (
+                        <li key={k} className="flex items-start gap-2">
+                          <svg className="w-4 h-4 text-green-600 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                          </svg>
+                          <span className="text-gray-600 capitalize">{k.replace(/([A-Z])/g, ' $1').replace(/_/g, ' ')}</span>
+                          <span className="ml-auto font-medium text-gray-900">{(v as any).label}</span>
+                        </li>
+                      ))}
+                  </ul>
+                </div>
+
+                <div className="space-y-2 text-sm text-gray-600 mb-4">
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2 5a2 2 0 012-2h12a2 2 0 012 2v10a2 2 0 01-2 2H4a2 2 0 01-2-2V5zm3 2h10v6H5V7z" />
+                    </svg>
+                    30-minute consultation via Zoom or phone
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M2.003 5.884L10 2l7.997 3.884v6.232L10 16l-7.997-3.884V5.884z" />
+                    </svg>
+                    Calendar invite and reminders included
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <svg className="w-4 h-4 text-blue-900" fill="currentColor" viewBox="0 0 20 20">
+                      <path d="M10 18a8 8 0 100-16 8 8 0 000 16zm-1-7V5h2v6H9zm0 4v-2h2v2H9z" />
+                    </svg>
+                    You can reschedule anytime from the confirmation email
+                  </div>
+                </div>
+
+                <div className="mt-2 pt-4 border-t border-gray-200 text-center">
+                  <div className="text-xs text-gray-500 mb-2">Need help now?</div>
+                  <div className="text-sm font-semibold" style={{ color: "#08213E" }}>(770) 396-2200</div>
+                  <div className="text-xs text-gray-500">Atlanta • Alpharetta • Gainesville</div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      <ConsultationModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        icpScore={icp}
-        leadCategory={category}
-        clientDetails={details}
-        selectionsPayload={selectionsPayload}
-        onNotify={notify}
-      />
+      {/* Modal removed in favor of inline form */}
       <ToastHost toasts={toasts} onDismiss={(id) => setToasts((t) => t.filter((x) => x.id !== id))} />
     </div>
   );

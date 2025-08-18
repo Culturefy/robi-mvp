@@ -21,14 +21,14 @@ export default function OptionButtonGroup({
   options,
   value,
   onChange,
-  size = "sm",
+  size = "md",
   columns = 2,
   idPrefix = "opt",
 }: Props) {
   const base =
     size === "sm"
-      ? "px-3 py-2 text-sm"
-      : "px-4 py-3 text-sm md:text-base";
+      ? "px-3 py-3 text-sm"
+      : "px-4 py-4 text-sm md:text-base";
   return (
     <div className={`grid grid-cols-${columns} gap-3`}>
       {options.map((opt) => {
@@ -39,12 +39,11 @@ export default function OptionButtonGroup({
             id={`${idPrefix}-${opt.value}`}
             type="button"
             onClick={() => onChange(opt.value)}
-            className={`${base} rounded-lg font-medium transition-all duration-200 text-left border ${
+            className={`${base} rounded-lg font-medium transition-all duration-200 text-left border-2 ${
               selected
-                ? "text-white shadow-md"
-                : "bg-gray-50 text-gray-700 hover:bg-gray-100 border-gray-200"
+                ? "bg-blue-900 text-white shadow-md border-blue-900"
+                : "bg-gray-100 text-gray-700 hover:bg-gray-200 border-gray-200"
             }`}
-            style={selected ? { backgroundColor: "#08213E" } : undefined}
           >
             <div className="font-medium">{opt.label}</div>
             {opt.sublabel ? (
@@ -56,4 +55,3 @@ export default function OptionButtonGroup({
     </div>
   );
 }
-
