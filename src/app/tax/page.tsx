@@ -23,7 +23,7 @@ const TaxPrepCalculator = () => {
   const [icpScore, setIcpScore] = useState(0);
   const [leadCategory, setLeadCategory] = useState('standard');
 
-  const basePricing = {
+  const basePricing: Record<string, Record<string, { base: number; max: number }>> = {
     individual: {
       single: { base: 750, max: 1200 },
       marriedJoint: { base: 950, max: 1500 },
@@ -43,7 +43,7 @@ const TaxPrepCalculator = () => {
     let score = 0;
 
     if (clientDetails.individualIncome) {
-      const incomeScores = {
+      const incomeScores: Record<string, number> = {
         'under250k': 0,
         '250k-500k': 2,
         '500k-1m': 5,
@@ -54,7 +54,7 @@ const TaxPrepCalculator = () => {
     }
 
     if (clientDetails.revenue) {
-      const revenueScores = {
+      const revenueScores: Record<string, number> = {
         'under1m': 1,
         '1m-5m': 4,
         '5m-15m': 7,
@@ -74,7 +74,7 @@ const TaxPrepCalculator = () => {
     if (stateCount >= 3) score += 5;
 
     if (clientDetails.primaryGoal) {
-      const goalScores = {
+      const goalScores: Record<string, number> = {
         'compliance': 1,
         'savings': 4,
         'growth': 7,
@@ -84,7 +84,7 @@ const TaxPrepCalculator = () => {
     }
 
     if (clientDetails.budgetRange) {
-      const budgetScores = {
+      const budgetScores: Record<string, number> = {
         'under2k': 0,
         '2k-5k': 3,
         '5k-10k': 6,
@@ -97,7 +97,7 @@ const TaxPrepCalculator = () => {
     return Math.min(score, 100);
   };
 
-  const determineLeadCategory = (score, estimateMax) => {
+  const determineLeadCategory = (score: number, estimateMax: number) => {
     if (score >= 75 && estimateMax >= 3000) return 'premium';
     if (score >= 60 && estimateMax >= 2000) return 'qualified';
     if (score >= 40 && estimateMax >= 1500) return 'standard';
@@ -114,7 +114,7 @@ const TaxPrepCalculator = () => {
       baseMax += pricing.max;
 
       if (clientDetails.individualIncome) {
-        const incomeMultipliers = {
+        const incomeMultipliers: Record<string, number> = {
           'under250k': 0.5,
           '250k-500k': 1,
           '500k-1m': 1.5,
@@ -150,7 +150,7 @@ const TaxPrepCalculator = () => {
       baseMax += pricing.max;
 
       if (clientDetails.revenue) {
-        const revenueMultipliers = {
+        const revenueMultipliers: Record<string, number> = {
           'under1m': 1,
           '1m-5m': 1.3,
           '5m-15m': 1.8,
@@ -237,7 +237,7 @@ const TaxPrepCalculator = () => {
 
   const categoryInfo = getLeadCategoryInfo();
 
-  const updateClientDetails = (field, value) => {
+  const updateClientDetails = (field: string, value: string | number) => {
     setClientDetails(prev => ({ ...prev, [field]: value }));
   };
 
