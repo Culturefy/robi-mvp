@@ -235,7 +235,7 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
             </select>
           </div>
         </div>
-        <div>
+        {/* <div>
           <label className="block text-sm text-gray-700 mb-1">Preferred meeting time (30 mins)</label>
           <input
             type="datetime-local"
@@ -246,7 +246,7 @@ export default function ConsultationModal({ open, onClose, leadCategory, icpScor
             className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]"
           />
           <div className="text-xs text-gray-500 mt-1">We’ll try to book your preferred 30-minute slot.</div>
-        </div>
+        </div> */}
           <div>
             <label className="block text-sm text-gray-700 mb-1">Notes</label>
             <textarea name="notes" rows={3} className="w-full border rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#E2AD44]" placeholder="Anything specific you want us to know" />
